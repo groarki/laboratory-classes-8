@@ -8,10 +8,27 @@
   <body>
     <main>
       <%- include('partials/navigation', { menuLinks: menuLinks, activeLinkPath:
-      activeLinkPath, cartCount: cartCount }); %>
+      activeLinkPath, cartCount: cartCount }); %> <% if (product) { %>
       <h1 class="heading"><%= product.name %></h1>
-      <div><%= product.description %></div>
-      <button onclick="deleteProduct('<%= product.name %>')">Delete</button>
+      <div class="product">
+        <p class="product__description"><%= product.description %></p>
+        <p class="product__price">$<%= product.price %></p>
+        <button
+          class="product__button product__button--add"
+          onclick="addToCart('<%= product.name %>')"
+        >
+          Add to Cart
+        </button>
+        <button
+          class="product__button product__button--delete"
+          onclick="deleteProduct('<%= product.name %>')"
+        >
+          Delete
+        </button>
+      </div>
+      <% } else { %>
+      <h1 class="heading">Product Not Found</h1>
+      <% } %>
     </main>
     <script>
       function deleteProduct(name) {
@@ -26,6 +43,22 @@
             window.location.reload();
           } else {
             alert("Error while removing product.");
+          }
+        });
+      }
+
+      function addToCart(productName) {
+        fetch("/cart/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productName }),
+        }).then((response) => {
+          if (response.ok) {
+            window.location.reload();
+          } else {
+            alert("Error while adding product to cart.");
           }
         });
       }
